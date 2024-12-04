@@ -18,13 +18,16 @@ apt install sudo
 
 # User privilege specification
 root    ALL=(ALL:ALL) ALL
+
 mohabid ALL=(ALL:ALL) ALL
 
-# Allow members of group sudo to execute any command
+Allow members of group sudo to execute any command
+
 %sudo   ALL=(ALL:ALL) ALL
+
 mohabid   ALL=(root) NOPASSWD /usr/local/bin/monitoring.sh (the user mohabid can excute the monitoring.sh script with no need to enter password after using sudo)
 
-create sexyppl group command : sudo groupadd sexyppl
+# create sexyppl group command : sudo groupadd sexyppl
 
 add to a user to a group : sudo usermod -aG sexyppl mohabid
 
@@ -50,8 +53,7 @@ sudo nano /etc/ssh/sshd_config (port 22 to 4242)
 
 permitRootLogin no
 
-You have to configure your operating system with the UFW (or firewalld for Rocky)
-firewall and thus leave only port 4242 open : 
+You have to configure your operating system with the UFW (or firewalld for Rocky) firewall and thus leave only port 4242 open : 
 
 sudo ufw default deny incoming
 

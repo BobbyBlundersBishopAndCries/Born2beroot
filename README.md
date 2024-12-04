@@ -36,7 +36,7 @@ create the user's group with the same gid = sudo groupadd -g GID groupname(you d
 
 run the command (id) to see the users and groups infos or (cat /etc/group)
 
-4 - SSH setup :
+# 4 - SSH setup :
 
  I -  Install openSSH server : 
 
@@ -77,13 +77,13 @@ sudo adduser simo (create a user)
 hostname -i(lowercase i to take server ip) output = 127.0.0.1 (but if you do in your browser localhost:4242 it is taken by a site with no purpose this is why you need to setup NAT as host port = 127.0.0.2)
 
 
-IV - Change of the hostname to mohabid42 :
+# - Change of the hostname to mohabid42 :
 
 sudo hostnamectl set-hostname mohabid42
 
 and sudo nano /etc/hosts change the second line (after localhost to your login42)
 
-5 : password policy configuration :
+# 5 : password policy configuration :
 
 I - sudo apt install libpam-pwquality
 
@@ -103,7 +103,7 @@ sudo chage --maxdays 30 --mindays 2 --warndays 7 mohabid // change manually
 
 chage -l mohabid // check age
 
-III - sudo nano /etc/sudoers (or sudo visudo)
+# 6 - sudo nano /etc/sudoers (or sudo visudo)
 
 Defaults        logfile="/var/log/sudo/sudo.log"
 
@@ -117,7 +117,7 @@ Defaults        badpass_message="your costum message here"
 
 Defaults        log_input, log_output
 
-6 - each action using sudo has to be archieved, both inputs and outputs in the logfile /var/log/sudo/sudo.log
+each action using sudo has to be archieved, both inputs and outputs in the logfile /var/log/sudo/sudo.log
 
 Defaults log_input, log_output
 
@@ -129,7 +129,7 @@ Defaults logfile="/var/log/sudo/sudo.log"
   
   logfile: This specifies the path to your custom log file.
 
-7 - monitoring script :
+# 7 - monitoring script :
 
 Create a service file for your script:
 
@@ -141,7 +141,7 @@ crontab -l // see your scheduled tasks
 
 crontab -r // remove services
 
-8- bonus 
+# 8- bonus 
 sudo apt-get update
 
 sudo apt-get upgrade

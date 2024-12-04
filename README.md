@@ -16,10 +16,14 @@ apt install sudo
 
 3 - add a user to sudo grp :sudo visudo
 
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+mohabid ALL=(ALL:ALL) ALL
+
+# Allow members of group sudo to execute any command
 %sudo   ALL=(ALL:ALL) ALL
 mohabid   ALL=(root) NOPASSWD /usr/local/bin/monitoring.sh (the user mohabid can excute the monitoring.sh script with no need to enter password after using sudo)
 
-sudo nano
 create sexyppl group command : sudo groupadd sexyppl
 
 add to a user to a group : sudo usermod -aG sexyppl mohabid
@@ -74,7 +78,9 @@ hostname -i(lowercase i to take server ip) output = 127.0.0.1 (but if you do in 
 
 
 IV - Change of the hostname to mohabid42 :
+
 sudo hostnamectl set-hostname mohabid42
+
 and sudo nano /etc/hosts change the second line (after localhost to your login42)
 
 5 : password policy configuration :
@@ -124,51 +130,6 @@ Defaults logfile="/var/log/sudo/sudo.log"
   logfile: This specifies the path to your custom log file.
 
 7 - monitoring script :
-#!/bin/bash
-
-arch=$(uname -a)
-
-cpuf=$(grep "physical id" /proc/cpuinfo | wc -l)
-
-cpuv=$(grep "processor" /proc/cpuinfo | wc -l)
-
-ram_total=$(free --mega | awk '$1 == "Mem:" {print $2}')
-ram_use=$(free --mega | awk '$1 == "Mem:" {print $3}')
-ram_percent=$(free --mega | awk '$1 == "Mem:" {printf("%.2f"), $3/$2*100}')
-
-disk_total=$(df -m | grep "/dev/" | grep -v "/boot" | awk '{disk_t += $2} END {printf ("%.1fGb\n"), disk_t/1024}')
-disk_use=$(df -m | grep "/dev/" | grep -v "/boot" | awk '{disk_u += $3} END {print disk_u}')
-disk_percent=$(df -m | grep "/dev/" | grep -v "/boot" | awk '{disk_u += $3} {disk_t+= $2} END {printf("%d"), disk_u/disk_t*100}')
-
-cpul=$(vmstat 1 2 | tail -1 | awk '{printf $15}')
-cpu_op=$(expr 100 - $cpul)
-cpu_fin=$(printf "%.1f" $cpu_op)
-
-lb=$(who -b | awk '$1 == "system" {print $3 " " $4}')
-
-lvmu=$(if [ $(lsblk | grep "lvm" | wc -l) -gt 0 ]; then echo yes; else echo no; fi)
-
-tcpc=$(ss -ta | grep ESTAB | wc -l)
-
-ulog=$(users | wc -w)
-
-ip=$(hostname -I)
-mac=$(ip link | grep "link/ether" | awk '{print $2}')
-
-cmnd=$(journalctl _COMM=sudo | grep COMMAND | wc -l)
-
-wall "  Architecture: $arch
-        CPU physical: $cpuf
-        vCPU: $cpuv
-        Memory Usage: $ram_use/${ram_total}MB ($ram_percent%)
-        Disk Usage: $disk_use/${disk_total} ($disk_percent%)
-        CPU load: $cpu_fin%
-        Last boot: $lb
-        LVM use: $lvmu
-        Connections TCP: $tcpc ESTABLISHED
-        User log: $ulog
-        Network: IP $ip ($mac)
-        Sudo: $cmnd cmd"
 
 Create a service file for your script:
 
@@ -196,36 +157,67 @@ sudo nano /etc/lighttpd/lighttpd.conf
 server.port                 = 8080 (you can use the default 80 )
 
 sudo apt-get install php php-cgi php-fpm php-mysql -y
+
 sudo lighty-enable-mod fastcgi
+
 sudo lighty-enable-mod fastcgi-php
+
 sudo systemctl restart lighttpd
+
 sudo apt-get install mariadb-server mariadb-client -y
+
 sudo systemctl start mariadb
+
 sudo systemctl enable mariadb
+
 sudo mysql_secure_installation
+
 sudo mysql -u root -p
+{// lets call this 1
+
 CREATE DATABASE mohabid;
+
 CREATE USER 'mohabid'@'localhost' IDENTIFIED BY 'Ilikemy123@';
+
 GRANT ALL PRIVILEGES ON mohabid.* TO 'mohabid'@'localhost';
+
 FLUSH PRIVILEGES;
+
 EXIT;
+
+}
+
 cd /var/www/html/
+
 sudo wget https://wordpress.org/latest.tar.gz
+
 sudo tar -xvzf latest.tar.gz
+
 sudo mv wordpress/* ./
+
 sudo rm -rf wordpress latest.tar.gzwww-data:
+
 sudo chown -R www-data /var/www/html/
+
 sudo chmod -R 755 /var/www/html/
-sudo nano /var/www/html/wordpress/wp-config.php
-{
-define( 'DB_NAME', 'wordpress' );
+
+sudo nano /var/www/html/wordpress/wp-config.php (if you don't have this file you have to copy the  /var/www/html/wordpress/wp-config-sample.php and rename it to wp-config.php in the www/html/wordpress directory)
+
+{// do the same config s you did in 1 (sudo mysql -u root -p command)
+
+define( 'DB_NAME', 'mohabid' );
+
 define( 'DB_USER', 'mohabid' );
-define( 'DB_PASSWORD', 'simosimo' );
+
+define( 'DB_PASSWORD', 'Ilikemy123@' );
+
 define( 'DB_HOST', 'localhost' );
+
 define( 'DB_CHARSET', 'utf8' );
+
 define( 'DB_COLLATE', '' );
 }
+
 sudo systemctl restart lighttpd
-xdg-open localhost:8080
-wget localhost:8080
-cat /var/www/html/index.html
+
+now you go to your browser open search bar and type localhost:8080 should be able to access your wordpress.
